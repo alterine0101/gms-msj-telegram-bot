@@ -34,11 +34,9 @@ Meskipun demikian Anda tetap dapat mengimpor kontak seluruh peserta tersebut den
 
 > **Catatan:** Tampilan aplikasi Telegram Anda dapat berbeda dengan yang tertera di dalam screenshot berdasarkan versi iOS yang terpasang.
 
-Di sini, Anda cukup perlu untuk mengklik file VCF tersebut, tekan tombol <i class="bi bi-arrow-down-circle" aria-hidden="true"></i> panah bawah yang terletak pada nama dokumen.
+Di sini, Anda cukup perlu untuk mengklik file VCF tersebut, tekan tombol <i class="bi bi-box-arrow-up" aria-hidden="true"></i> **Bagikan** untuk membagikan file tersebut kepada aplikasi WhatsApp.
 
 ![Step 1](https://user-images.githubusercontent.com/17312341/193580926-41094498-767b-4ac1-be55-1be90e6ce117.png)
-
-Kemudian, bagikan file tersebut dengan menekan tombol <i class="bi bi-box-arrow-up" aria-hidden="true"></i> **Bagikan** untuk membagikan file tersebut kepada aplikasi WhatsApp.
 
 Setelah terkirim di WhatsApp, Anda dapat mengeklik file yang dikirim tersebut untuk melihat keseluruhan kontak peserta dan menyimpannya secara serentak.
 
@@ -48,11 +46,11 @@ Setelah terkirim di WhatsApp, Anda dapat mengeklik file yang dikirim tersebut un
 
 Untuk dapat mengimpor file tersebut, Anda perlu untuk menyimpanya ke dalam aplikasi [Files](https://support.apple.com/id-id/HT206481) terlebih dahulu.
 
-Di sini, Anda cukup perlu untuk mengklik file VCF tersebut, tekan tombol <i class="bi bi-folder2" aria-hidden="true"></i> **Simpan ke File** (*Save to Files*) untuk menyimpannya ke dalam aplikasi Files. Telegram tetap akan menyimpan file tersebut secara utuh sehingga seluruh data kontak tersebut akan tetap dapat diimpor secara utuh.
+Di sini, Anda cukup perlu untuk mengklik file VCF tersebut, tekan tombol <i class="bi bi-folder2" aria-hidden="true"></i> **Simpan ke File** (*Save to Files*) untuk menyimpannya ke dalam aplikasi Files. Aplikasi Telegram tetap akan menyimpan file tersebut secara utuh sehingga seluruh data kontak tersebut akan tetap dapat diimpor dengan sempurna.
 
 ![Step 1](https://user-images.githubusercontent.com/17312341/193580926-41094498-767b-4ac1-be55-1be90e6ce117.png)
 
-> **Catatan:** Pastikan Anda mengingat lokasi/direktori di mana file tersebut disimpan, seperti "iCloud Drive/Documents" atau "This iPhone/Downloads" untuk memudahkan proses impor.
+> **Catatan:** Pastikan Anda mengingat lokasi/direktori di mana file tersebut disimpan, seperti "iCloud Drive/Documents" atau "On My iPhone/Downloads" untuk memudahkan proses impor.
 
 Kemudian, buka web browser Anda dan buka situs kontak online favorit Anda. Untuk informasi lebih lanjut untuk mengimpor file kepada situs tersebut, kunjungi:
 
