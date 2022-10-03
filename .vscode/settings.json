@@ -1,0 +1,12 @@
+{
+  "js/ts.implicitProjectConfig.experimentalDecorators": true,
+  "workbench.colorCustomizations": {
+      "activityBar.background": "#330518",
+      "activityBar.foreground": "#FF2E85",
+      "activityBar.inactiveForeground": "#992E5B",
+      "activityBarBadge.background": "#FF80B5",
+      "activityBarBadge.foreground": "#330518",
+      "titleBar.activeBackground": "#330518",
+      "titleBar.activeForeground": "#FF2E85"
+  }
+}
