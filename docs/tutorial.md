@@ -54,8 +54,8 @@ Di sini, Anda cukup perlu untuk mengklik file VCF tersebut, tekan tombol <i clas
 
 Kemudian, buka web browser Anda dan buka situs kontak online favorit Anda. Untuk informasi lebih lanjut untuk mengimpor file kepada situs tersebut, kunjungi:
 
-+ Google: https://support.google.com/contacts/answer/1069522?hl=id
-+ Microsoft 365 / Outlook.com: https://support.microsoft.com/id-id/office/mengimpor-kontak-ke-outlook-com-285a3b55-8d93-4ac8-93df-43fffd13b2f1
-+ Yahoo!: https://id.bantuan.yahoo.com/kb/Impor-ekspor-atau-cetak-kontak-di-Yahoo-Mail-sln28070.html
++ Google: <https://support.google.com/contacts/answer/1069522?hl=id>
++ Microsoft 365 / Outlook.com: <https://support.microsoft.com/id-id/office/mengimpor-kontak-ke-outlook-com-285a3b55-8d93-4ac8-93df-43fffd13b2f1>
++ Yahoo!: <https://id.bantuan.yahoo.com/kb/Impor-ekspor-atau-cetak-kontak-di-Yahoo-Mail-sln28070.html>
 
 Dan terakhir, pastikan Anda telah [menambahkan akun kalender tersebut ke dalam perangkat iOS Anda](https://support.apple.com/id-id/guide/iphone/ipha0d932e96/ios). Kontak Anda akan otomatis tersinkronisasi dalam 15 menit hingga 1 jam setelah proses impor tersebut selesai.
