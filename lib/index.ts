@@ -16,17 +16,20 @@ temp.track();
  * @returns Status whether presence is recorded inside the server
  */
 async function updateStatus(): Promise<boolean> {
-  if (!process.env.RHSTATUS_PROXY_ENDPOINT || process.env.RHSTATUS_PROXY_ENDPOINT.length == 0) {
-    console.error("* ERROR: rhstatus-proxy endpoint is not defined");
+  if (!process.env.UPTIME_REPORTER_ENDPOINT || process.env.UPTIME_REPORTER_ENDPOINT.length == 0) {
+    console.error("* ERROR: Uptime reporter endpoint is not defined");
     return false;
   }
   const formData = new FormData();
-  formData.append("deviceId", process.env.RHSTATUS_PROXY_DEVICE_ID!);
-  formData.append("reportingSource", process.env.RHSTATUS_PROXY_DEVICE_ID!);
-  formData.append("secret", process.env.RHSTATUS_PROXY_DEVICE_TOKEN!);
-  const res = await bent("POST")(process.env.RHSTATUS_PROXY_ENDPOINT, formData, formData.getHeaders()) as bent.BentResponse;
+  formData.append("deviceId", process.env.UPTIME_REPORTER_DEVICE_ID!);
+  formData.append("reportingSource", process.env.UPTIME_REPORTER_DEVICE_ID!);
+  formData.append("secret", process.env.UPTIME_REPORTER_DEVICE_TOKEN!);
+  const res = await bent("POST")(process.env.UPTIME_REPORTER_ENDPOINT, formData, formData.getHeaders()) as bent.BentResponse;
   return res.statusCode == 200;
 }
+
+updateStatus();
+const statusUpdater = setInterval(updateStatus, 1000 * 60 * 5);
 
 async function generateParticipantListTemplate(ctx: Context, format: XLSX.BookType, clearCached: boolean = false): Promise<void> {
   const fileName = `docs/assets/templates/template-peserta.${format}`;
@@ -53,7 +56,6 @@ const bot = new Bot<MyContext>(process.env.TG_TOKEN!);
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
 bot.api.config.use(hydrateFiles(bot.token));
-
 
 /* Template Peserta */
 bot.command("templatepeserta", (ctx) => {
@@ -93,7 +95,14 @@ bot.command("buatvcf", (ctx: MyContext) => {
 });
 
 bot.start();
+console.log("Bot is now available");
 
 // Enable graceful stop
-process.once('SIGINT', () => bot.stop());
-process.once('SIGTERM', () => bot.stop());
+process.once('SIGINT', () => {
+  clearInterval(statusUpdater);
+  bot.stop();
+});
+process.once('SIGTERM', () => {
+  clearInterval(statusUpdater);
+  bot.stop();
+});
