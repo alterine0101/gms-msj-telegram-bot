@@ -6,7 +6,7 @@ import { InlineKeyboardButton } from "grammy/out/types.node";
 import parsePhoneNumber from "libphonenumber-js";
 import temp from "temp";
 import * as XLSX from "xlsx";
-import { COLUMN_PARTICIPANT_ID, COLUMN_PARTICIPANT_NAME, COLUMN_PARTICIPANT_PHONE } from "../constants";
+import { COLUMN_PARTICIPANT_ID, COLUMN_PARTICIPANT_NAME, COLUMN_PARTICIPANT_PHONE, COLUMN_PARTICIPANT_REMEDIAL } from "../constants";
 import { MyContext } from "..";
 
 const sanitize = (text: any) => typeof text == "string" ? text.replace(/;/g, "\\\;") : text;
@@ -20,7 +20,7 @@ export default async function contactListGeneratorConversation(conversation: Con
     msjType = "MSJ"
   }
 
-  await ctx.reply('Baik, silakan upload file data peserta Anda\\.\n\n_*Tip:* Jika Anda ingin memberi nama acara yang berbeda \\(misal: "MSJ 1 Kelapa Gading"\\), gunakan perintah `/buatvcf MSJ 1 Kelapa Gading`\\._', {
+  await ctx.reply('Baik, silakan upload file data peserta Anda dalam format *XLSX*, *XLS* *ODT*, *NUMBERS*, maupun *CSV*\\.\n\n_*Tip:* Jika Anda ingin memberi nama acara yang berbeda \\(misal: "MSJ 1 Kelapa Gading"\\), gunakan perintah `/buatvcf MSJ 1 Kelapa Gading`\\._', {
     parse_mode: "MarkdownV2",
     reply_markup: {
       inline_keyboard: [[{
@@ -91,7 +91,8 @@ export default async function contactListGeneratorConversation(conversation: Con
   }
 
   const ws = wb!.Sheets[wb!.SheetNames[selectedSheet || 0]];
-  if (!ws.A1 || !ws.A2 || !ws.A3 || !ws.A4 || !ws.A5) {
+  console.log(ws);
+  if (!ws.A1 || !ws.B1 || !ws.B2 || !ws.B3 || !ws.B4) {
     resCtx.reply("Mohon maaf, format spreadsheet Anda tidak valid. Pastikan Anda menggunakan template /templatepeserta untuk hasil yang terbaik.");
     return;
   }
@@ -103,13 +104,21 @@ export default async function contactListGeneratorConversation(conversation: Con
     await conversation.external(async () => {
       let i: number;
       for (i = 1; i < data.length; i++) {
-        const columns = data[i] as Array<string>;
-        const phone = parsePhoneNumber(columns[COLUMN_PARTICIPANT_PHONE].toString().replace(/^8/g, "08").replace(/^62/g, "+62"), "ID");
+        const columns = data[i] as Array<string|number|boolean>;
+        
+        if (!columns[COLUMN_PARTICIPANT_PHONE] || ("" + columns[COLUMN_PARTICIPANT_PHONE]).length == 0) continue;
+
+        const phone = parsePhoneNumber(("" + columns[COLUMN_PARTICIPANT_PHONE]).replace(/^8/g, "08").replace(/^62/g, "+62"), "ID");
+        let additionalAttributes = [];
+        if (columns[COLUMN_PARTICIPANT_ID] != null && columns[COLUMN_PARTICIPANT_ID].toString().length > 0) additionalAttributes.push(sanitize(columns[COLUMN_PARTICIPANT_ID].toString()));
+        if (columns[COLUMN_PARTICIPANT_REMEDIAL] == true) additionalAttributes.push("Susulan");
+        const additionalAttributeText = additionalAttributes.length > 0 ? ` (${additionalAttributes.join(", ")})` : "";
+
         vcard += [
           "BEGIN:VCARD",
           "VERSION:3.0",
-          `N:${sanitize(columns[COLUMN_PARTICIPANT_NAME])};${sanitize(msjType!)} (${sanitize(columns[COLUMN_PARTICIPANT_ID])});;;`,
-          `FN:${sanitize(columns[COLUMN_PARTICIPANT_NAME])} ${sanitize(msjType!)} (${sanitize(columns[COLUMN_PARTICIPANT_ID])})`,
+          `N:${sanitize(columns[COLUMN_PARTICIPANT_NAME])};${sanitize(msjType!)}${additionalAttributeText};;;`,
+          `FN:${sanitize(columns[COLUMN_PARTICIPANT_NAME])} ${sanitize(msjType!)}${additionalAttributeText}`,
           `TEL;TYPE=CELL;TYPE=PREF:${phone?.formatInternational()}`,
           "END:VCARD"
         ].join("\n") + "\n";
