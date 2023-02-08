@@ -58,7 +58,7 @@ export default async function contactListGeneratorConversation(conversation: Con
   } while (!isDocumentReceived);
 
   let selectedSheet: number|null = null;
-  if (wb!.SheetNames.length < 0) {
+  if (wb!.SheetNames.length <= 0) {
     resCtx.reply("Mohon maaf, kami sedang mengalami kendala dalam memproses file Anda.");
     return;
   } else if (wb!.SheetNames.length > 1) {
@@ -83,11 +83,11 @@ export default async function contactListGeneratorConversation(conversation: Con
         return;
       } else if (resCtx2.update.callback_query.data!.startsWith("sheet-")) {
         selectedSheet == Number.parseInt(resCtx2.update.callback_query.data!.replace(/^sheet-/g, ""));
-        if (selectedSheet == null || selectedSheet == NaN || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
+        if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
           await resCtx.reply("Jawaban Anda tidak valid");
         }
       }
-    } while (selectedSheet == null || selectedSheet == NaN || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
+    } while (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
   }
 
   const ws = wb!.Sheets[wb!.SheetNames[selectedSheet || 0]];
@@ -129,7 +129,7 @@ export default async function contactListGeneratorConversation(conversation: Con
         suffix: ".vcf"
       });
       fs.writeFile(vcfFilePath.path, vcard);
-    });  
+    });
   } catch (e) {
     console.error(e);
     resCtx.reply("Mohon maaf, kami sedang mengalami kendala dalam memproses file Anda.");

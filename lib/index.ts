@@ -90,8 +90,24 @@ bot.callbackQuery("templatepeserta-csv", (ctx) => generateParticipantListTemplat
 /* VCF Generator */
 bot.use(createConversation(contactListGeneratorConversation));
 bot.command("buatvcf", (ctx: MyContext) => {
-  console.log(typeof ctx);
   ctx.conversation.enter("contactListGeneratorConversation");
+});
+
+/* Convert Phone Number */
+bot.command("convertnohp", async (ctx: MyContext) => {
+  if (ctx.message!.photo) {
+    ctx.reply("Gunakan perintah ini dengan input seperti berikut\\.\n\n`/convertnohp 080989999 \\+62809\\-899\\-99` \\(tanpa spasi antar nomor\\)\\.\n\n*⚠️ PENTING:* Jika teks yang disalin dari Excel muncul seperti *628098E\\+09*, pastikan Anda _paste_ dengan menggunakan tombol *Ctrl\\-Shift\\-V* \\(macOS: *^ ⌘ V*\\)\\.", { parse_mode: "MarkdownV2" });
+    return;
+  }
+  let numbers = ctx.message!.text!.split(/\s/);
+  if (numbers.length < 2) {
+    ctx.reply("Gunakan perintah ini dengan input seperti berikut\\.\n\n`/convertnohp 080989999 \\+62809\\-899\\-99` \\(tanpa spasi antar nomor\\)\\.\n\n*⚠️ PENTING:* Jika teks yang disalin dari Excel muncul seperti *628098E\\+09*, pastikan Anda _paste_ dengan menggunakan tombol *Ctrl\\-Shift\\-V* \\(macOS: *^ ⌘ V*\\)\\.", { parse_mode: "MarkdownV2" });
+    return;
+  }
+  numbers.shift();
+  numbers = numbers.map((value) => value.toString().length == 0 ? value : "+" + value.toString().replace(/^(\+){0,1}((62)|0){0,1}8/g, "628").replace(/\W+/g, ""));
+  await ctx.reply(numbers.join("\n"));
+  await ctx.reply("*⚠️ PENTING:* Pastikan Anda lakukan 2 hal berikut sebelum menyalin teks yang dibuat di atas:\n\n1\\. Mengubah format _cell_ dari *General/Number* menjadi *Text* sebelum menyalin teks\n\n2\\. Menempelkannya secara _plaintext_ melalui menu *Paste As* / *Paste Special* dengan menggunakan *Ctrl\\-Shift\\-V* \\(macOS: *^ ⌘ V*\\.\\)", { parse_mode: "MarkdownV2" });
 });
 
 bot.start();
