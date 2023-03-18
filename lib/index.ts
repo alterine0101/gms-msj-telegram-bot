@@ -7,6 +7,7 @@ import temp from "temp";
 import * as XLSX from "xlsx";
 import { ConversationFlavor, conversations, createConversation } from "@grammyjs/conversations";
 import contactListGeneratorConversation from "./wizards/contactListGeneratorConversation";
+import attendanceGeneratorConversation from "./wizards/attendanceGeneratorConversation";
 
 dotenv.config();
 temp.track();
@@ -57,6 +58,11 @@ bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
 bot.api.config.use(hydrateFiles(bot.token));
 
+/* Start Command */
+bot.command("start", (ctx) => {
+  ctx.reply("Welcome Home!\nBerikut adalah fitur-fitur yang bisa Anda pakai\n\n+ /templatepeserta - Unduh template peserta\n+ /templateabsensi - Unduh template absensi\n+ /buatvcf - Buat file VCF peserta\n+ /convertnohp - Ubah format nomor HP peserta\n+ /absensi - Absensi")
+});
+
 /* Template Peserta */
 bot.command("templatepeserta", (ctx) => {
   ctx.reply("Berikut ini adalah template data peserta. Sebelumnya, di manakah Anda akan menambahkan data peserta ini?", {
@@ -87,7 +93,13 @@ bot.callbackQuery("templatepeserta-xls", (ctx) => generateParticipantListTemplat
 bot.callbackQuery("templatepeserta-ods", (ctx) => generateParticipantListTemplate(ctx, 'ods'));
 bot.callbackQuery("templatepeserta-csv", (ctx) => generateParticipantListTemplate(ctx, 'csv'));
 
-/* VCF Generator */
+/* Attendance Generator */
+bot.use(createConversation(attendanceGeneratorConversation));
+bot.command("absensi", (ctx: MyContext) => {
+  ctx.conversation.enter("attendanceGeneratorConversation");
+});
+
+// /* VCF Generator */
 bot.use(createConversation(contactListGeneratorConversation));
 bot.command("buatvcf", (ctx: MyContext) => {
   ctx.conversation.enter("contactListGeneratorConversation");
