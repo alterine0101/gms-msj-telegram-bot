@@ -346,8 +346,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     for (let i = 1; i < current.length; i++) {
       let matches: string[] = [];
       if (current[i][COLUMN_ATTENDANCE_NAME].toString().toLowerCase().replace(/\s+/, " ") == participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().replace(/\s+/, " ")) matches.push("Nama");
-      if (current[i][COLUMN_ATTENDANCE_EMAIL].toString().toLowerCase() == participant[COLUMN_PARTICIPANT_EMAIL]!.toString().toLowerCase()) matches.push("Email");
-      if (parsePhoneNumber(current[i][COLUMN_ATTENDANCE_PHONE].toString(), "ID") == parsePhoneNumber(participant[COLUMN_PARTICIPANT_PHONE]!.toString(), "ID")) matches.push("Nomor Telepon");
+      if (participant[COLUMN_PARTICIPANT_EMAIL] != null && current[i][COLUMN_ATTENDANCE_EMAIL].toString().toLowerCase() == participant[COLUMN_PARTICIPANT_EMAIL]!.toString().toLowerCase()) matches.push("Email");
+      if (participant[COLUMN_PARTICIPANT_PHONE] != null && parsePhoneNumber(current[i][COLUMN_ATTENDANCE_PHONE].toString(), "ID") == parsePhoneNumber(participant[COLUMN_PARTICIPANT_PHONE].toString(), "ID")) matches.push("Nomor Telepon");
 
       if (matches.length > 0) return [current[i][COLUMN_ATTENDANCE_TIMESTAMP].toString(), matches.join(",")];
       
@@ -368,7 +368,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
         else nameHash2.set(nameSplit2[j], currentPartVal + 1);
       }
 
-      if (Array.from(nameHash1.keys()).filter((item) => nameHash2.has(item)).length > 0) warnings.push(`Nama "${participant[COLUMN_PARTICIPANT_NAME]!.toString()}" mungkin mirip dengan "${current[COLUMN_ATTENDANCE_NAME].toString()}". Mohon untuk dicek secara manual.`);
+      if (Array.from(nameHash1.keys()).filter((item) => nameHash2.has(item)).length / Array.from(nameHash1.keys()).length > 0.66) warnings.push(`Nama "${participant[COLUMN_PARTICIPANT_NAME]!.toString()}" mungkin mirip dengan "${current[COLUMN_ATTENDANCE_NAME].toString()}". Mohon untuk dicek secara manual.`);
     }
     return [null, null];
   }
