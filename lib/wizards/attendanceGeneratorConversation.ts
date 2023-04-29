@@ -351,23 +351,25 @@ export default async function attendanceGeneratorConversation(conversation: Conv
       }
 
       /* Check for similar names */
-      let nameSplit1 = participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().split(/\s+/).sort();
-      let nameHash1: Map<string, number> = new Map();
-      for (let j = 0; j < nameSplit1.length; j++) {
-        const currentPartVal = nameHash1.get(nameSplit1[j]);
-        if (!currentPartVal) nameHash1.set(nameSplit1[j], 1);
-        else nameHash1.set(nameSplit1[j], currentPartVal + 1);
+      if (participant[COLUMN_PARTICIPANT_NAME] && current[COLUMN_ATTENDANCE_NAME]) {
+        let nameSplit1 = participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().split(/\s+/).sort();
+        let nameHash1: Map<string, number> = new Map();
+        for (let j = 0; j < nameSplit1.length; j++) {
+          const currentPartVal = nameHash1.get(nameSplit1[j]);
+          if (!currentPartVal) nameHash1.set(nameSplit1[j], 1);
+          else nameHash1.set(nameSplit1[j], currentPartVal + 1);
+        }
+        
+        let nameSplit2 = current[COLUMN_ATTENDANCE_NAME].toString().toLowerCase().split(/\s+/).sort();
+        let nameHash2: Map<string, number> = new Map();
+        for (let j = 0; j < nameSplit2.length; j++) {
+          const currentPartVal = nameHash2.get(nameSplit2[j]);
+          if (!currentPartVal) nameHash2.set(nameSplit2[j], 1);
+          else nameHash2.set(nameSplit2[j], currentPartVal + 1);
+        }
+  
+        if (Array.from(nameHash1.keys()).filter((item) => nameHash2.has(item)).length / Array.from(nameHash1.keys()).length > 0.66) warnings.push(`Nama "${participant[COLUMN_PARTICIPANT_NAME]!.toString()}" mungkin mirip dengan "${current[COLUMN_ATTENDANCE_NAME].toString()}". Mohon untuk dicek secara manual.`);
       }
-      
-      let nameSplit2 = current[COLUMN_ATTENDANCE_NAME].toString().toLowerCase().split(/\s+/).sort();
-      let nameHash2: Map<string, number> = new Map();
-      for (let j = 0; j < nameSplit2.length; j++) {
-        const currentPartVal = nameHash2.get(nameSplit2[j]);
-        if (!currentPartVal) nameHash2.set(nameSplit2[j], 1);
-        else nameHash2.set(nameSplit2[j], currentPartVal + 1);
-      }
-
-      if (Array.from(nameHash1.keys()).filter((item) => nameHash2.has(item)).length / Array.from(nameHash1.keys()).length > 0.66) warnings.push(`Nama "${participant[COLUMN_PARTICIPANT_NAME]!.toString()}" mungkin mirip dengan "${current[COLUMN_ATTENDANCE_NAME].toString()}". Mohon untuk dicek secara manual.`);
     }
     return [null, null];
   }
