@@ -337,6 +337,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   data.final = [finalColumns];
 
   function searchTimestamp(participant: Array<string|number|boolean|Date|null>, no: number): [string|null, string|null] {
+    if (!Array.isArray(data[no])) return [null, null];
     let current = data[no] as Array<Array<string|number|boolean|Date|null>>;
     for (let i = 1; i < current.length; i++) {
       let matches: string[] = [];
