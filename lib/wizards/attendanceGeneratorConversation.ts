@@ -340,9 +340,15 @@ export default async function attendanceGeneratorConversation(conversation: Conv
       let matches: string[] = [];
       if (current[i][COLUMN_ATTENDANCE_NAME]!.toString().toLowerCase().replace(/\s+/, " ") == participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().replace(/\s+/, " ")) matches.push("Nama");
       if (current[i][COLUMN_ATTENDANCE_EMAIL] && participant[COLUMN_PARTICIPANT_EMAIL] && current[i][COLUMN_ATTENDANCE_EMAIL]!.toString().toLowerCase() == participant[COLUMN_PARTICIPANT_EMAIL].toString().toLowerCase()) matches.push("Email");
-      if (current[i][COLUMN_ATTENDANCE_PHONE] && participant[COLUMN_PARTICIPANT_PHONE] && parsePhoneNumber(current[i][COLUMN_ATTENDANCE_PHONE]!.toString(), "ID") == parsePhoneNumber(participant[COLUMN_PARTICIPANT_PHONE].toString(), "ID")) matches.push("Nomor Telepon");
+      if (current[i][COLUMN_ATTENDANCE_PHONE] && participant[COLUMN_PARTICIPANT_PHONE] && parsePhoneNumber(current[i][COLUMN_ATTENDANCE_PHONE]!.toString().replace("O", "0").replace("o", "0"), "ID") == parsePhoneNumber(participant[COLUMN_PARTICIPANT_PHONE].toString().replace("O", "0").replace("o", "0"), "ID")) matches.push("Nomor Telepon");
 
-      if (matches.length > 0) return [(current[i][COLUMN_ATTENDANCE_TIMESTAMP] as Date).toISOString(), matches.join(", ")];
+      if (matches.length > 0) {
+        try {
+          return [(current[i][COLUMN_ATTENDANCE_TIMESTAMP] as Date).toISOString(), matches.join(", ")];
+        } catch (e) {
+          return [`${current[i][COLUMN_ATTENDANCE_TIMESTAMP]}`, matches.join(", ")];
+        }
+      }
 
       /* Check for similar names */
       let nameSplit1 = participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().split(/\s+/).sort();
