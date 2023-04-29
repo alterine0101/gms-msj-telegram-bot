@@ -202,7 +202,6 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   let done = false;
   let warnings: string[] = [];
 
-  let attempts = 0;
   for (let i = 0; i < 3; i++) {
     let isDocumentReceived = false;
     let wb: XLSX.WorkBook;
@@ -291,7 +290,6 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     }
 
     data[i + 1] = XLSX.utils.sheet_to_json(ws, { header: 1 });
-    attempts++;
     // await resCtx.reply(data[i + 1].length.toString());
   }
 
@@ -332,8 +330,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     "Kecocokan Data Absen 1",
   ];
 
-  if (data[2]) finalColumns.concat(["Waktu Absen 2", "Kecocokan Data Absen 2"]);
-  if (data[3]) finalColumns.concat(["Waktu Absen 3", "Kecocokan Data Absen 3"]);
+  if (data[2]) finalColumns = finalColumns.concat(["Waktu Absen 2", "Kecocokan Data Absen 2"]);
+  if (data[3]) finalColumns = finalColumns.concat(["Waktu Absen 3", "Kecocokan Data Absen 3"]);
   data.final = [finalColumns];
 
   function searchTimestamp(participant: Array<string|number|boolean|Date|null>, no: number): [string|null, string|null] {
@@ -384,8 +382,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     
     // await resCtx.reply(data[1].length.toString());
     insert = insert.concat(searchTimestamp(insert, 1));
-    if (attempts > 1) insert = insert.concat(searchTimestamp(insert, 2));
-    if (attempts > 2) insert = insert.concat(searchTimestamp(insert, 3));
+    if (data[2]) insert = insert.concat(searchTimestamp(insert, 2));
+    if (data[3]) insert = insert.concat(searchTimestamp(insert, 3));
 
     data.final.push(insert);
   }
