@@ -338,7 +338,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     let current = data[no] as Array<Array<string|number|boolean|Date|null>>;
     for (let i = 1; i < current.length; i++) {
       let matches: string[] = [];
-      if (current[i][COLUMN_ATTENDANCE_NAME]!.toString().toLowerCase().replace(/\s+/, " ") == participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().replace(/\s+/, " ")) matches.push("Nama");
+      if (current[i][COLUMN_ATTENDANCE_NAME] && participant[COLUMN_PARTICIPANT_NAME] && current[i][COLUMN_ATTENDANCE_NAME]!.toString().toLowerCase().replace(/\s+/, " ") == participant[COLUMN_PARTICIPANT_NAME]!.toString().toLowerCase().replace(/\s+/, " ")) matches.push("Nama");
       if (current[i][COLUMN_ATTENDANCE_EMAIL] && participant[COLUMN_PARTICIPANT_EMAIL] && current[i][COLUMN_ATTENDANCE_EMAIL]!.toString().toLowerCase() == participant[COLUMN_PARTICIPANT_EMAIL].toString().toLowerCase()) matches.push("Email");
       if (current[i][COLUMN_ATTENDANCE_PHONE] && participant[COLUMN_PARTICIPANT_PHONE] && parsePhoneNumber(current[i][COLUMN_ATTENDANCE_PHONE]!.toString().replace("O", "0").replace("o", "0"), "ID") == parsePhoneNumber(participant[COLUMN_PARTICIPANT_PHONE].toString().replace("O", "0").replace("o", "0"), "ID")) matches.push("Nomor Telepon");
 
