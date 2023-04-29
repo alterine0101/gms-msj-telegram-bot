@@ -202,6 +202,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   let done = false;
   let warnings: string[] = [];
 
+  let attempts = 0;
   for (let i = 0; i < 3; i++) {
     let isDocumentReceived = false;
     let wb: XLSX.WorkBook;
@@ -290,6 +291,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     }
 
     data[i + 1] = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    attempts++;
     // await resCtx.reply(data[i + 1].length.toString());
   }
 
@@ -381,8 +383,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     
     // await resCtx.reply(data[1].length.toString());
     insert = insert.concat(searchTimestamp(insert, 1));
-    if (typeof data[2] != undefined) insert = insert.concat(searchTimestamp(insert, 2));
-    if (typeof data[3] != undefined) insert = insert.concat(searchTimestamp(insert, 3));
+    if (attempts > 1) insert = insert.concat(searchTimestamp(insert, 2));
+    if (attempts > 2) insert = insert.concat(searchTimestamp(insert, 3));
 
     data.final.push(insert);
   }
