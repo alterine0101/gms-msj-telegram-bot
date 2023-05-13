@@ -434,7 +434,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   const now = new Date();
   let resSheetNames = ["Rekap Absensi"];
   if (resFormat != "csv" && warnings.length > 0) resSheetNames.push(`Warnings (${warnings.length})`);
-  const resTitle = `Absensi MSJ ${msjType} Sesi ${session} ${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+  const resTitle = `Absensi MSJ ${msjType} Sesi ${session} ${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
   let resWb = XLSX.utils.book_new();
   resWb.Props = {
     Application: "GMS MSJ Admin Bot",
