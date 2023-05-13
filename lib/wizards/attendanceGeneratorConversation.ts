@@ -363,23 +363,28 @@ export default async function attendanceGeneratorConversation(conversation: Conv
       ) matches.push("Email");
       if (
         current[i][COLUMN_ATTENDANCE_PHONE] &&
-        participant[COLUMN_PARTICIPANT_PHONE] &&
-        parsePhoneNumber(
+        participant[COLUMN_PARTICIPANT_PHONE]
+      ) {
+        let attendancePhone = parsePhoneNumber(
           current[i][COLUMN_ATTENDANCE_PHONE]!
             .toString()
             .replace("O", "0")
             .replace("o", "0"),
           "ID"
-        ).isEqual(
-          parsePhoneNumber(
-            participant[COLUMN_PARTICIPANT_PHONE]
-              .toString()
-              .replace("O", "0")
-              .replace("o", "0"),
-            "ID"
-          )
-        )
-      ) matches.push("Nomor Telepon");
+        );
+        let participantPhone = parsePhoneNumber(
+          participant[COLUMN_PARTICIPANT_PHONE]
+            .toString()
+            .replace("O", "0")
+            .replace("o", "0"),
+          "ID"
+        );
+        if (
+          attendancePhone &&
+          participantPhone &&
+          attendancePhone.isEqual(participantPhone)
+        ) matches.push("Nomor Telepon");
+      }
 
       if (matches.length > 0) {
         try {
