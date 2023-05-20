@@ -439,7 +439,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   let resWb = XLSX.utils.book_new();
   resWb.Props = {
     Application: "GMS MSJ Admin Bot",
-    AppVersion: "1.2.0",
+    AppVersion: "1.3.0",
     CreatedDate: now,
     Title: resTitle,
   };
