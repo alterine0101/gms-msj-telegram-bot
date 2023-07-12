@@ -20,12 +20,12 @@
     "@grammyjs/conversations": "1.0.3",
     "@grammyjs/files": "^1.0.4",
     "bent": "^7.3.12",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "flake-idgen": "^1.4.0",
     "form-data": "^4.0.0",
-    "grammy": "1.11.1",
+    "grammy": "1.17.2",
     "jsdb": "^1.0.3",
-    "libphonenumber-js": "^1.10.24",
+    "libphonenumber-js": "^1.10.37",
     "temp": "^0.9.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.11/xlsx-0.18.11.tgz"
   }

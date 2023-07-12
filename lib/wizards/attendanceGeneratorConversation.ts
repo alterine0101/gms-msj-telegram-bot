@@ -225,7 +225,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
 
     if (i == 0) await resCtx.reply("Pastikan masing-masing file memiliki urutan kolom sebagai berikut:\n\n1. Timestamp\n2. Nama Lengkap\n3. Tanggal Lahir\n4. Email\n5. Nomor HP\n6. NIJ (Khusus MSJ 2 dan 3)");
     const resCtx2 = await conversation.wait() as MyContext;
-    console.log(resCtx2);
+    // console.log(resCtx2);
     if (resCtx2.update && resCtx2.update.callback_query) {
       switch (resCtx2.update.callback_query.data) {
         case "cancel":
@@ -283,7 +283,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
       } while (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
     }
     const ws = wb!.Sheets[wb!.SheetNames[selectedSheet || 0]];
-    console.log(ws);
+    // console.log(ws);
     if (!ws.A1 || !ws.B1 || !ws.C1 || !ws.D1 || !ws.E1 || (parseInt(msjType) > 1 && !ws.F1)) {
       resCtx.reply("Mohon maaf, format spreadsheet Anda tidak valid.");
       return;
@@ -334,6 +334,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   if (data[3]) finalColumns = finalColumns.concat(["Waktu Absen 3", "Kecocokan Data Absen 3"]);
   data.final = [finalColumns];
 
+  let nameCount = 0, emailCount = 0, phoneCount = 0;
+
   function searchTimestamp(participant: Array<string|number|boolean|Date|null>, no: number): [string|null, string|null] {
     if (!Array.isArray(data[no])) return [null, null];
     let current = data[no] as Array<Array<string|number|boolean|Date|null>>;
@@ -350,7 +352,10 @@ export default async function attendanceGeneratorConversation(conversation: Conv
           .toString()
           .toLowerCase()
           .replace(/\s+/, " ")
-      ) matches.push("Nama");
+      ) {
+        matches.push("Nama");
+        nameCount++;
+      }
       if (
         current[i][COLUMN_ATTENDANCE_EMAIL] &&
         participant[COLUMN_PARTICIPANT_EMAIL] &&
@@ -360,7 +365,10 @@ export default async function attendanceGeneratorConversation(conversation: Conv
         participant[COLUMN_PARTICIPANT_EMAIL]
           .toString()
           .toLowerCase()
-      ) matches.push("Email");
+      ) {
+        matches.push("Email");
+        emailCount++;
+      };
       if (
         current[i][COLUMN_ATTENDANCE_PHONE] &&
         participant[COLUMN_PARTICIPANT_PHONE]
@@ -383,7 +391,10 @@ export default async function attendanceGeneratorConversation(conversation: Conv
           attendancePhone &&
           participantPhone &&
           attendancePhone.isEqual(participantPhone)
-        ) matches.push("Nomor Telepon");
+        ) {
+          matches.push("Nomor Telepon");
+          phoneCount++;
+        };
       }
 
       if (matches.length > 0) {
@@ -429,6 +440,9 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     if (data[3]) insert = insert.concat(searchTimestamp(insert, 3));
 
     data.final.push(insert);
+    if (i % 50 == 0 || i == data.participants.length - 1) {
+      await resCtx.reply(`Sedang memproses ${i} dari ${data.participants.length} (${Math.floor(i / data.participants.length * 100)}%)\n+ Nama Cocok: ${nameCount}\n+Email Cocok: ${emailCount}\n+ No. Telepon Cocok: ${phoneCount}`);
+    }
   }
 
   const now = new Date();

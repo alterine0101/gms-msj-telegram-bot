@@ -91,7 +91,7 @@ export default async function contactListGeneratorConversation(conversation: Con
   }
 
   const ws = wb!.Sheets[wb!.SheetNames[selectedSheet || 0]];
-  console.log(ws);
+  // console.log(ws);
   if (!ws.A1 || !ws.B1 || !ws.C1 || !ws.D1 || !ws.E1) {
     resCtx.reply("Mohon maaf, format spreadsheet Anda tidak valid. Pastikan Anda menggunakan template /templatepeserta untuk hasil yang terbaik.");
     return;
