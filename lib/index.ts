@@ -25,8 +25,12 @@ async function updateStatus(): Promise<boolean> {
   formData.append("deviceId", process.env.UPTIME_REPORTER_DEVICE_ID!);
   formData.append("reportingSource", process.env.UPTIME_REPORTER_DEVICE_ID!);
   formData.append("secret", process.env.UPTIME_REPORTER_DEVICE_TOKEN!);
-  const res = await bent("POST")(process.env.UPTIME_REPORTER_ENDPOINT, formData, formData.getHeaders()) as bent.BentResponse;
-  return res.statusCode == 200;
+  try {
+    const res = await bent("POST")(process.env.UPTIME_REPORTER_ENDPOINT, formData, formData.getHeaders()) as bent.BentResponse;
+    return res.statusCode == 200;
+  } catch (e) {
+    return false;
+  }
 }
 
 updateStatus();
