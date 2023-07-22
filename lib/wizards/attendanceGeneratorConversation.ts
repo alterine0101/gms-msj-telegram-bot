@@ -441,7 +441,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
 
     data.final.push(insert);
     if (i % 50 == 0 || i == data.participants.length - 1) {
-      await resCtx.reply(`Sedang memproses ${i} dari ${data.participants.length} (${Math.floor(i / data.participants.length * 100)}%)\n+ Nama Cocok: ${nameCount}\n+Email Cocok: ${emailCount}\n+ No. Telepon Cocok: ${phoneCount}`);
+      await resCtx.reply(`Sedang memproses ${i} dari ${data.participants.length} (${Math.floor(i / data.participants.length * 100)}%)\n+ Nama Cocok: ${nameCount}\n+ Email Cocok: ${emailCount}\n+ No. Telepon Cocok: ${phoneCount}`);
     }
   }
 
