@@ -86,6 +86,9 @@ export default async function contactListGeneratorConversation(conversation: Con
         if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
           await resCtx.reply("Jawaban Anda tidak valid");
         }
+      } else {
+        await resCtx.reply(`Undefined callback ${resCtx2.update.callback_data}`)
+        await resCtx.reply(`Undefined callback ${resCtx2.update.callback_query.data}`)
       }
     } while (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
   }
