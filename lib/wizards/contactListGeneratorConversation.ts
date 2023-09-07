@@ -66,7 +66,7 @@ export default async function contactListGeneratorConversation(conversation: Con
       reply_markup: {
         inline_keyboard: wb!.SheetNames.map((name: string, i: number) => [
           <InlineKeyboardButton>{
-              callback_data: `sheet-${i}`,
+              callback_data: `sheet_${i}`,
               text: name,
             }
           ]
@@ -81,7 +81,7 @@ export default async function contactListGeneratorConversation(conversation: Con
     if (resCtx2.update?.callback_query?.data == "cancel") {
       await resCtx.reply("Operasi dibatalkan.");
       return;
-    } else if (resCtx2.update?.callback_query?.data!.startsWith("sheet-")) {
+    } else if (resCtx2.update?.callback_query?.data!.startsWith("sheet_")) {
       selectedSheet == Number.parseInt(resCtx2.update.callback_query.data!.replace(/^sheet-/g, ""));
       if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
         await resCtx.reply("Jawaban Anda tidak valid");
