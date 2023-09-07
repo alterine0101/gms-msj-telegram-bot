@@ -78,16 +78,16 @@ export default async function contactListGeneratorConversation(conversation: Con
     });
     do {
       const resCtx2 = await conversation.wait();
-      if (resCtx2.update.callback_query.data == "cancel") {
+      if (resCtx2.update?.callback_query?.data == "cancel") {
         await resCtx.reply("Operasi dibatalkan.");
         return;
-      } else if (resCtx2.update.callback_query.data!.startsWith("sheet-")) {
+      } else if (resCtx2.update?.callback_query?.data!.startsWith("sheet-")) {
         selectedSheet == Number.parseInt(resCtx2.update.callback_query.data!.replace(/^sheet-/g, ""));
         if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
           await resCtx.reply("Jawaban Anda tidak valid");
         }
       } else {
-        await resCtx.reply(`Undefined callback ${resCtx2.update.callback_query.data}`)
+        await resCtx.reply(`Undefined callback ${resCtx2}`)
       }
     } while (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
   }
