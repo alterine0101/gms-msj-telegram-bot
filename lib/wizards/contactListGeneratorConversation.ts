@@ -77,7 +77,7 @@ export default async function contactListGeneratorConversation(conversation: Con
       }
     });
 
-    const resCtx2 = await conversation.waitFrom(ctx.user) as MyContext;
+    const resCtx2 = await conversation.waitFrom(ctx.user);
     if (resCtx2.update?.callback_query?.data == "cancel") {
       await resCtx.reply("Operasi dibatalkan.");
       return;
