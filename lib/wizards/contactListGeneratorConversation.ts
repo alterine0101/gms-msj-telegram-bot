@@ -133,7 +133,8 @@ export default async function contactListGeneratorConversation(conversation: Con
         prefix: `Data Peserta ${msjType} - `,
         suffix: ".vcf"
       });
-      fs.writeFileSync(vcfFilePath.path, vcard);
+      await fs.write(vcfFilePath.fd, vcard);
+      await fs.close(vcfFilePath.fd);
     });
   } catch (e) {
     console.error(e);
