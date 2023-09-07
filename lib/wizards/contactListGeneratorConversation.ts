@@ -62,7 +62,7 @@ export default async function contactListGeneratorConversation(conversation: Con
     resCtx.reply("Mohon maaf, kami sedang mengalami kendala dalam memproses file Anda.");
     return;
   } else if (wb!.SheetNames.length > 1) {
-    resCtx.reply("Pilih Tab/Worksheet yang akan kami proses.", {
+    await resCtx.reply("Pilih Tab/Worksheet yang akan kami proses.", {
       reply_markup: {
         inline_keyboard: wb!.SheetNames.map((name: string, i: number) => [
           <InlineKeyboardButton>{
