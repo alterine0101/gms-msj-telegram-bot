@@ -133,8 +133,10 @@ export default async function contactListGeneratorConversation(conversation: Con
         prefix: `Data Peserta ${msjType} - `,
         suffix: ".vcf"
       });
-      await fs.write(vcfFilePath.fd, vcard);
-      await fs.close(vcfFilePath.fd);
+      await fs.writeFile(vcfFilePath.path, vcard);
+      // await fs.close(vcfFilePath.fd);
+      await resCtx.reply("Berikut ini adalah daftar kontak yang berhasil dibuat.\n\nPenting: Jika Anda pengguna iOS/iPadOS, lakukan hal berikut ini untuk dapat mengimpor semua data peserta ke dalam kontak Anda.\n\nhttps://gms-msj-telegram-bot.reinhart1010.id/tutorial.html#mengimpor-file-vcf-di-dalam-perangkat-ios");
+      await resCtx.replyWithDocument(new InputFile(vcfFilePath.path));    
     });
   } catch (e) {
     console.error(e);
@@ -143,6 +145,4 @@ export default async function contactListGeneratorConversation(conversation: Con
   }
   
   if (vcfFilePath == null) return;
-  await resCtx.reply("Berikut ini adalah daftar kontak yang berhasil dibuat.\n\nPenting: Jika Anda pengguna iOS/iPadOS, lakukan hal berikut ini untuk dapat mengimpor semua data peserta ke dalam kontak Anda.\n\nhttps://gms-msj-telegram-bot.reinhart1010.id/tutorial.html#mengimpor-file-vcf-di-dalam-perangkat-ios");
-  await resCtx.replyWithDocument(new InputFile(vcfFilePath.path));
 }
