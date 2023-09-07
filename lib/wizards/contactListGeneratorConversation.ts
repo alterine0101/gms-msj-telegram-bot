@@ -77,7 +77,7 @@ export default async function contactListGeneratorConversation(conversation: Con
       }
     });
 
-    const resCtx2 = await conversation.wait();
+    const resCtx2 = await conversation.waitFrom(ctx.user) as MyContext;
     if (resCtx2.update?.callback_query?.data == "cancel") {
       await resCtx.reply("Operasi dibatalkan.");
       return;
@@ -133,7 +133,7 @@ export default async function contactListGeneratorConversation(conversation: Con
         prefix: `Data Peserta ${msjType} - `,
         suffix: ".vcf"
       });
-      fs.writeFile(vcfFilePath.path, vcard);
+      await fs.writeFile(vcfFilePath.path, vcard);
     });
   } catch (e) {
     console.error(e);
