@@ -76,20 +76,23 @@ export default async function contactListGeneratorConversation(conversation: Con
         }]])
       }
     });
-    do {
-      const resCtx2 = await conversation.wait();
-      if (resCtx2.update?.callback_query?.data == "cancel") {
-        await resCtx.reply("Operasi dibatalkan.");
-        return;
-      } else if (resCtx2.update?.callback_query?.data!.startsWith("sheet-")) {
-        selectedSheet == Number.parseInt(resCtx2.update.callback_query.data!.replace(/^sheet-/g, ""));
-        if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
-          await resCtx.reply("Jawaban Anda tidak valid");
-        }
-      } else {
-        await resCtx.reply(`Undefined callback ${resCtx2}`)
+
+    const resCtx2 = await conversation.wait();
+    if (resCtx2.update?.callback_query?.data == "cancel") {
+      await resCtx.reply("Operasi dibatalkan.");
+      return;
+    } else if (resCtx2.update?.callback_query?.data!.startsWith("sheet-")) {
+      selectedSheet == Number.parseInt(resCtx2.update.callback_query.data!.replace(/^sheet-/g, ""));
+      if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
+        await resCtx.reply("Jawaban Anda tidak valid");
       }
-    } while (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length);
+    } else {
+      await resCtx.reply(`Undefined callback ${resCtx2}`);
+      return;
+    }
+    // if (selectedSheet == null || Number.isNaN(selectedSheet) || selectedSheet! < 0 || selectedSheet! > wb!.SheetNames.length) {
+      
+    // };
   }
 
   const ws = wb!.Sheets[wb!.SheetNames[selectedSheet || 0]];
