@@ -117,7 +117,7 @@ export default async function contactListGeneratorConversation(conversation: Con
         const phone = parsePhoneNumber(("" + columns[COLUMN_PARTICIPANT_PHONE]).replace(/^8/g, "08").replace(/^62/g, "+62"), "ID");
         let additionalAttributes = [];
         if (columns[COLUMN_PARTICIPANT_ID] != null && columns[COLUMN_PARTICIPANT_ID].toString().length > 0) additionalAttributes.push(sanitize(columns[COLUMN_PARTICIPANT_ID].toString()));
-        if (columns[COLUMN_PARTICIPANT_REMEDIAL] !== false && columns[COLUMN_PARTICIPANT_REMEDIAL].toString().length > 0) additionalAttributes.push("Susulan");
+        if (typeof columns[COLUMN_PARTICIPANT_REMEDIAL] != undefined && columns[COLUMN_PARTICIPANT_REMEDIAL] !== false && columns[COLUMN_PARTICIPANT_REMEDIAL].toString().length > 0) additionalAttributes.push("Susulan");
         const additionalAttributeText = additionalAttributes.length > 0 ? ` (${additionalAttributes.join(", ")})` : "";
 
         vcard += [
