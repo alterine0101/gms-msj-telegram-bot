@@ -15,6 +15,7 @@ let vcfFilePath: temp.OpenFile|null = null;
 export const defaultWizardName = "attendanceGeneratorWizard";
 
 export default async function attendanceGeneratorConversation(conversation: Conversation<Context>, ctx: Context) {
+  await ctx.reply("Mulai 9 September 2023, susunan kolom data peserta dirubah untuk mengikuti standar Departemen Edukasi GMS Jabodetabek. Anda dapat mengunduh template terbaru dengan keluar dari menu ini dan memilih /templatepeserta.");
   await ctx.reply("Sebelumnya, Anda ingin memasukkan absensi untuk sesi apa?", {
     reply_markup: {
       inline_keyboard: [

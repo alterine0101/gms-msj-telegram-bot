@@ -1,2 +1,2 @@
-﻿"ID",Nama Peserta,Nomor Telepon,Alamat Surel/Email,Mengikuti Susulan?
-1 (Tidak harus berhubungan dengan NIJ),Peserta,080989999,test@example.com,TRUE
+﻿"ID",Nama Peserta,Nomor Telepon,Mengikuti Susulan (di sesi)?,Alamat Surel/Email
+1 (Tidak harus berhubungan dengan NIJ),Peserta,080989999,123,test@example.com

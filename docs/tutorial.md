@@ -9,6 +9,8 @@ Kami menyediakan dua jenis template, yakni template untuk menampung data peserta
 
 Anda masih dapat mengubah nama-nama kolom yang terdapat pada template yang disediakan, namun Anda harus tetap menggunakan urutan kolom yang sama.
 
+> Mulai 9 September 2023, susunan kolom dari template peserta berubah dari **Nomor, Nama, No. Telp, Email, Susulan** menjadi **Nomor, Nama, No. Telp, Susulan, Email**
+
 ## Kompatibilitas Format File
 Bot Telegram ini memanfaatkan *library* [SheetJS](https://sheetjs.com) untuk memproses file-file yang Anda kirimkan. Karena itu, bot ini dapat mendukung format file sebagai berikut:
 

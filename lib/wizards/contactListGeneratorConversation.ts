@@ -29,6 +29,7 @@ export default async function contactListGeneratorConversation(conversation: Con
       }]]
     }
   });
+  await ctx.reply("Mulai 9 September 2023, susunan kolom data peserta dirubah untuk mengikuti standar Departemen Edukasi GMS Jabodetabek. Anda dapat mengunduh template terbaru dengan keluar dari menu ini dan memilih /templatepeserta.");
 
   let resCtx: MyContext;
   let isDocumentReceived = false;
@@ -116,7 +117,7 @@ export default async function contactListGeneratorConversation(conversation: Con
         const phone = parsePhoneNumber(("" + columns[COLUMN_PARTICIPANT_PHONE]).replace(/^8/g, "08").replace(/^62/g, "+62"), "ID");
         let additionalAttributes = [];
         if (columns[COLUMN_PARTICIPANT_ID] != null && columns[COLUMN_PARTICIPANT_ID].toString().length > 0) additionalAttributes.push(sanitize(columns[COLUMN_PARTICIPANT_ID].toString()));
-        if (columns[COLUMN_PARTICIPANT_REMEDIAL] == true) additionalAttributes.push("Susulan");
+        if (columns[COLUMN_PARTICIPANT_REMEDIAL] !== false) additionalAttributes.push("Susulan");
         const additionalAttributeText = additionalAttributes.length > 0 ? ` (${additionalAttributes.join(", ")})` : "";
 
         vcard += [
@@ -136,8 +137,7 @@ export default async function contactListGeneratorConversation(conversation: Con
       await fs.writeFile(vcfFilePath.path, vcard);
       // await fs.close(vcfFilePath.fd);
       await resCtx.reply("Berikut ini adalah daftar kontak yang berhasil dibuat.\n\nPenting: Jika Anda pengguna iOS/iPadOS, lakukan hal berikut ini untuk dapat mengimpor semua data peserta ke dalam kontak Anda.\n\nhttps://gms-msj-telegram-bot.reinhart1010.id/tutorial.html#mengimpor-file-vcf-di-dalam-perangkat-ios");
-      await resCtx.replyWithDocument(new InputFile(vcfFilePath.path));    
-      await resCtx.reply(vcfFilePath.path);
+      await resCtx.replyWithDocument(new InputFile(vcfFilePath.path));
     });
   } catch (e) {
     console.error(e);
