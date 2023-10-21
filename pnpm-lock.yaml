@@ -35,6 +35,9 @@ dependencies:
   temp:
     specifier: ^0.9.4
     version: 0.9.4
+  totp-generator:
+    specifier: ^0.0.14
+    version: 0.0.14
   xlsx:
     specifier: https://cdn.sheetjs.com/xlsx-0.18.11/xlsx-0.18.11.tgz
     version: '@cdn.sheetjs.com/xlsx-0.18.11/xlsx-0.18.11.tgz'
@@ -49,6 +52,9 @@ devDependencies:
   '@types/temp':
     specifier: ^0.9.1
     version: 0.9.1
+  '@types/totp-generator':
+    specifier: ^0.0.7
+    version: 0.0.7
   typescript:
     specifier: ^4.9.5
     version: 4.9.5
@@ -105,6 +111,10 @@ packages:
     resolution: {integrity: sha512-yDQ8Y+oQi9V7VkexwE6NBSVyNuyNFeGI275yWXASc2DjmxNicMi9O50KxDpNlST1kBbV9jKYBHGXhgNYFMPqtA==}
     dependencies:
       '@types/node': 20.4.1
+    dev: true
+
+  /@types/totp-generator@0.0.7:
+    resolution: {integrity: sha512-lET1UuxZxfHzg+hwRPnLnVyv8SOm4DRLQWEVbJ9MK4Plm3IOchpASDbKUAC5gdfLuWvwlQ4mCHu2w8dGbdKdaw==}
     dev: true
 
   /abort-controller@3.0.0:
@@ -244,6 +254,10 @@ packages:
     resolution: {integrity: sha512-6pZqSM4TDXf2N6NhLVSDQxjjknfWA8buvaJHdIbztOSod9CLwrskpXmCKVFwIG/zYBqtm8c2EefJXxb7hiM4og==}
     dev: false
 
+  /jssha@3.3.1:
+    resolution: {integrity: sha512-VCMZj12FCFMQYcFLPRm/0lOBbLi8uM2BhXPTqw3U4YAfs4AZfiApOoBLoN8cQE60Z50m1MYMTQVCfgF/KaCVhQ==}
+    dev: false
+
   /libphonenumber-js@1.10.37:
     resolution: {integrity: sha512-Z10PCaOCiAxbUxLyR31DNeeNugSVP6iv/m7UrSKS5JHziEMApJtgku4e9Q69pzzSC9LnQiM09sqsGf2ticZnMw==}
     dev: false
@@ -317,6 +331,12 @@ packages:
     dependencies:
       mkdirp: 0.5.6
       rimraf: 2.6.3
+    dev: false
+
+  /totp-generator@0.0.14:
+    resolution: {integrity: sha512-vFZ8N2TdF4mCj8bUW460jI73LqS+JKccsZ8cttQSuXa3dkTmZo8q81Pq2yAuiPxCI5fPfUrfaKuU+7adjx5s4w==}
+    dependencies:
+      jssha: 3.3.1
     dev: false
 
   /tr46@0.0.3:

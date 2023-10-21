@@ -4,13 +4,20 @@ import { Bot, Context, InputFile, Middleware, session, SessionFlavor } from "gra
 import { FileFlavor, hydrateFiles } from "@grammyjs/files";
 import FormData from "form-data";
 import temp from "temp";
+import totp from "totp-generator";
 import * as XLSX from "xlsx";
+
 import { ConversationFlavor, conversations, createConversation } from "@grammyjs/conversations";
 import contactListGeneratorConversation from "./wizards/contactListGeneratorConversation";
 import attendanceGeneratorConversation from "./wizards/attendanceGeneratorConversation";
 
 dotenv.config();
 temp.track();
+
+function checkTOTP(totpCheck: string): boolean {
+  if (!process.env.ADMIN_OTP_SECRET || process.env.ADMIN_OTP_SECRET.length == 0) return false;
+  return totpCheck == totp(process.env.ADMIN_OTP_SECRET);
+}
 
 /**
  * Utility function to record the service's presence to a rhstatus-proxy server
@@ -103,10 +110,21 @@ bot.command("absensi", (ctx: MyContext) => {
   ctx.conversation.enter("attendanceGeneratorConversation");
 });
 
-// /* VCF Generator */
+/* VCF Generator */
 bot.use(createConversation(contactListGeneratorConversation));
 bot.command("buatvcf", (ctx: MyContext) => {
   ctx.conversation.enter("contactListGeneratorConversation");
+});
+
+/* Check OTP */
+bot.command("checkotp", async (ctx: MyContext) => {
+  let params = ctx.message!.text!.split(/\s/);
+  if (params.length < 2) {
+    ctx.reply("Gunakan perintah ini dengan input seperti berikut\\.\n\n`/checkotp 123456` \\(tanpa spasi antar nomor\\)\\.", { parse_mode: "MarkdownV2" });
+    return;
+  }
+  params.shift();
+  await ctx.reply(checkTOTP(params[0]).toString());
 });
 
 /* Convert Phone Number */
