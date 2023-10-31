@@ -1,5 +1,7 @@
 import bent from "bent";
+import {randomBytes} from "crypto";
 import * as dotenv from "dotenv";
+import express from "express";
 import { Bot, Context, InputFile, Middleware, session, SessionFlavor } from "grammy";
 import { FileFlavor, hydrateFiles } from "@grammyjs/files";
 import FormData from "form-data";
@@ -11,12 +13,30 @@ import { ConversationFlavor, conversations, createConversation } from "@grammyjs
 import contactListGeneratorConversation from "./wizards/contactListGeneratorConversation";
 import attendanceGeneratorConversation from "./wizards/attendanceGeneratorConversation";
 
+// Important: Obtain current environment configuration
 dotenv.config();
 temp.track();
 
+const app = express()
+const port = process.env.WEBHOOK_LOCAL_PORT || 3000
+
+let webhookVerificationToken: string = "";
+
+/**
+ * Utility function to perform TOTP verification
+ * @param totpCheck The TOTP token to check
+ * @returns The status whether TOTP is valid
+ */
 function checkTOTP(totpCheck: string): boolean {
   if (!process.env.ADMIN_OTP_SECRET || process.env.ADMIN_OTP_SECRET.length == 0) return false;
   return totpCheck == totp(process.env.ADMIN_OTP_SECRET);
+}
+
+/**
+ * Refresh the server's webhook verification token
+ */
+function refreshWebhookVerificationToken() {
+  webhookVerificationToken = randomBytes(256).toString('hex')
 }
 
 /**
@@ -40,8 +60,6 @@ async function updateStatus(): Promise<boolean> {
   }
 }
 
-updateStatus();
-const statusUpdater = setInterval(updateStatus, 1000 * 60 * 5);
 
 async function generateParticipantListTemplate(ctx: Context, format: XLSX.BookType, clearCached: boolean = false): Promise<void> {
   const fileName = `docs/assets/templates/template-peserta.${format}`;
@@ -127,6 +145,41 @@ bot.command("checkotp", async (ctx: MyContext) => {
   await ctx.reply(checkTOTP(params[0]).toString());
 });
 
+/* Check Webhook */
+bot.command("checkwebhook", async (ctx: MyContext) => {
+  refreshWebhookVerificationToken();
+  try {
+    if (
+      !process.env.WEBHOOK_LOCAL_HOST || process.env.WEBHOOK_LOCAL_HOST.length == 0 ||
+      !process.env.WEBHOOK_LOCAL_PORT || process.env.WEBHOOK_LOCAL_PORT.length == 0
+    ) throw Error();
+    const res = await fetch(`http://${process.env.WEBHOOK_LOCAL_HOST}:${process.env.WEBHOOK_LOCAL_PORT}/verify_integrity`);
+    const resJson = await res.json();
+    if (resJson.status == "OK" && resJson.token == webhookVerificationToken) {
+      await ctx.reply("Konfigurasi server internal benar.");
+    } else {
+      throw Error();
+    }
+  } catch (e) {
+    await ctx.reply("Konfigurasi server internal salah.");
+  }
+  try {
+    if (
+      !process.env.WEBHOOK_REMOTE_HOST || process.env.WEBHOOK_REMOTE_HOST.length == 0 ||
+      !process.env.WEBHOOK_REMOTE_PORT || process.env.WEBHOOK_REMOTE_PORT.length == 0
+    ) throw Error();
+    const res = await fetch(`https://${process.env.WEBHOOK_REMOTE_HOST}:${process.env.WEBHOOK_REMOTE_PORT}/verify_integrity`);
+    const resJson = await res.json();
+    if (resJson.status == "OK" && resJson.token == webhookVerificationToken) {
+      await ctx.reply("Konfigurasi server eksternal benar.");
+    } else {
+      throw Error();
+    }
+  } catch (e) {
+    await ctx.reply("Konfigurasi server eksternal salah.");
+  }
+});
+
 /* Convert Phone Number */
 bot.command("convertnohp", async (ctx: MyContext) => {
   if (ctx.message!.photo) {
@@ -156,3 +209,24 @@ process.once('SIGTERM', () => {
   clearInterval(statusUpdater);
   bot.stop();
 });
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+})
+
+app.get('/verify_integrity', (req, res) => {
+  res.send({
+    "status": "OK",
+    "token": webhookVerificationToken,
+  });
+})
+
+/* Start Telegram and Express */
+
+updateStatus();
+const statusUpdater = setInterval(updateStatus, 1000 * 60 * 5);
+
+app.listen(port, () => {
+  refreshWebhookVerificationToken()
+  console.log(`Example app listening on port ${port}`);
+})
