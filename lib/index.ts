@@ -6,7 +6,6 @@ import FormData from "form-data";
 import { Bot, Context, InputFile, Middleware, session, SessionFlavor } from "grammy";
 import { FileFlavor, hydrateFiles } from "@grammyjs/files";
 import { Database } from '@jsweb/jsdb';
-import temp from "temp";
 import totp from "totp-generator";
 import * as XLSX from "xlsx";
 
@@ -24,7 +23,6 @@ let whatsAppMSJData = new Map<string, Array<string>>();
 
 // Important: Obtain current environment configuration
 dotenv.config();
-temp.track();
 
 const app = express()
 const port = process.env.WEBHOOK_LOCAL_PORT || 3000
