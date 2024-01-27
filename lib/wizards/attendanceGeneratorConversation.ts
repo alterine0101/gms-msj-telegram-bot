@@ -324,8 +324,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     "ID",
     "Nama Peserta",
     "Nomor Telepon",
+    "Susulan",
     "Email",
-    "Mengikuti Susulan?",
     "Waktu Absen 1",
     "Kecocokan Data Absen 1",
   ];
@@ -433,6 +433,8 @@ export default async function attendanceGeneratorConversation(conversation: Conv
     // console.log(data.participants[i]);
     // await resCtx.reply(data.participants[i].toString());
     let insert = (data.participants[i] as Array<string|number|boolean|null>).splice(0, 5);
+    
+    while (insert.length < 5) insert.push(null)
     
     // await resCtx.reply(data[1].length.toString());
     insert = insert.concat(searchTimestamp(insert, 1));
