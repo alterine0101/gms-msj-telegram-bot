@@ -4,13 +4,15 @@ import { FileX } from "@grammyjs/files/out/files";
 import { Context, InputFile } from "grammy";
 import { InlineKeyboardButton } from "grammy/out/types.node";
 import parsePhoneNumber from "libphonenumber-js";
-import temp from "temp";
+import { default as _temp } from "temp";
 import * as XLSX from "xlsx";
 import { COLUMN_PARTICIPANT_ID, COLUMN_PARTICIPANT_NAME, COLUMN_PARTICIPANT_PHONE, COLUMN_PARTICIPANT_REMEDIAL } from "../constants";
 import { MyContext } from "..";
 
+const temp = _temp.track();
+
 const sanitize = (text: any) => typeof text == "string" ? text.replace(/;/g, "\\\;") : text;
-let vcfFilePath: temp.OpenFile|null = null;
+let vcfFilePath: _temp.OpenFile|null = null;
 
 export const defaultWizardName = "contactListGeneratorWizard";
 
@@ -44,8 +46,9 @@ export default async function contactListGeneratorConversation(conversation: Con
     } else {
       try {
         await conversation.external(async () => {
+          const tempDir: _temp.OpenFile = await temp.open("msjbot");
           const file: FileX = await resCtx.getFile();
-          const path: string = await file.download();
+          const path: string = await file.download(tempDir.path);
           const buffer: Buffer = await (await fs.open(path)).readFile();
           wb = XLSX.read(buffer);
         });
