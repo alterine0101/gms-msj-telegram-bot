@@ -139,3 +139,6 @@ lib/*/*.js.map
 db/
 clips/incoming/*
 clips/outgoing/*
+
+# Material files
+materials/*

@@ -21,6 +21,7 @@
   "dependencies": {
     "@grammyjs/conversations": "1.0.3",
     "@grammyjs/files": "^1.0.4",
+    "@jsweb/jsdb": "^1.1.1",
     "bent": "^7.3.12",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

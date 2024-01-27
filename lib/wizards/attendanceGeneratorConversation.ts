@@ -200,7 +200,6 @@ export default async function attendanceGeneratorConversation(conversation: Conv
   const data: { [key: string]: unknown[][] } = {
     participants: XLSX.utils.sheet_to_json(ws, { header: 1 })
   };
-  let done = false;
   let warnings: string[] = [];
 
   for (let i = 0; i < 3; i++) {
@@ -224,7 +223,7 @@ export default async function attendanceGeneratorConversation(conversation: Conv
       }
     });
 
-    if (i == 0) await resCtx.reply("Pastikan masing-masing file memiliki urutan kolom sebagai berikut:\n\n1. Timestamp\n2. Nama Lengkap\n3. Tanggal Lahir\n4. Email\n5. Nomor HP\n6. NIJ (Khusus MSJ 2 dan 3)");
+    if (i == 0) await resCtx.reply("Pastikan masing-masing file memiliki urutan kolom sebagai berikut:\n\n1. Timestamp\n2. Nama Lengkap\n3. Nomor HP\n4. Email\n5. Tanggal Lahir\n6. NIJ (Khusus MSJ 2 dan 3)");
     const resCtx2 = await conversation.wait() as MyContext;
     // console.log(resCtx2);
     if (resCtx2.update && resCtx2.update.callback_query) {

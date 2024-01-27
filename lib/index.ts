@@ -2,16 +2,25 @@ import bent from "bent";
 import {randomBytes} from "crypto";
 import * as dotenv from "dotenv";
 import express from "express";
+import FormData from "form-data";
 import { Bot, Context, InputFile, Middleware, session, SessionFlavor } from "grammy";
 import { FileFlavor, hydrateFiles } from "@grammyjs/files";
-import FormData from "form-data";
+import { Database } from '@jsweb/jsdb';
 import temp from "temp";
 import totp from "totp-generator";
 import * as XLSX from "xlsx";
 
 import { ConversationFlavor, conversations, createConversation } from "@grammyjs/conversations";
-import contactListGeneratorConversation from "./wizards/contactListGeneratorConversation";
 import attendanceGeneratorConversation from "./wizards/attendanceGeneratorConversation";
+import contactListGeneratorConversation from "./wizards/contactListGeneratorConversation";
+import sendMaterialsConversation from "./wizards/sendMaterialsConversation";
+import { parsePhoneNumber, PhoneNumber } from "libphonenumber-js";
+
+const db = new Database('msjbot');
+const materialRequests = db.store('material_requests');
+
+let adminData = new Map<number, Date>();
+let whatsAppMSJData = new Map<string, Array<string>>();
 
 // Important: Obtain current environment configuration
 dotenv.config();
@@ -58,6 +67,31 @@ async function updateStatus(): Promise<boolean> {
   } catch (e) {
     return false;
   }
+}
+
+/* Recurring method to notify admin for expiration */
+async function updateAdminExpiry() {
+  let idsToRemove: number[] = [];
+  let idsToWarn: number[] = [];
+  adminData.forEach((startDate, userId) => {
+    // Use of the unary + operator is necessary—seehttps://github.com/Microsoft/TypeScript/issues/5710
+    const diff = Math.floor(+new Date() - +startDate / 60000);
+    // TODO: Compare dates
+    if (diff >= 16) {
+      // Remove user
+      idsToRemove.push(userId);
+    } else if (diff == 10) {
+      // Warn user
+      idsToWarn.push(userId)
+    }
+  });
+  idsToRemove.forEach(async (userId) => {
+    adminData.delete(userId);
+    await bot.api.sendMessage(userId, "Masa berlaku admin Anda sudah habis. Masukkan OTP baru dalam /admin untuk memperpanjangnya.");
+  });
+  idsToWarn.forEach(async (userId) => {
+    await bot.api.sendMessage(userId, "Masa berlaku admin Anda tinggal 5 menit. Masukkan OTP baru dalam /admin untuk memperpanjangnya.");
+  });
 }
 
 
@@ -126,6 +160,22 @@ bot.callbackQuery("templatepeserta-csv", (ctx) => generateParticipantListTemplat
 bot.use(createConversation(attendanceGeneratorConversation));
 bot.command("absensi", (ctx: MyContext) => {
   ctx.conversation.enter("attendanceGeneratorConversation");
+});
+
+/* Grant Admin Privileges */
+bot.command("admin", async (ctx: MyContext) => {
+  let params = ctx.message!.text!.split(/\s/);
+  if (params.length < 2) {
+    ctx.reply("Gunakan perintah ini dengan input seperti berikut\\.\n\n`/admin 123456` \\(tanpa spasi antar nomor\\)\\.", { parse_mode: "MarkdownV2" });
+    return;
+  }
+  params.shift();
+  if (checkTOTP(params[0]).toString()) {
+    adminData.set(ctx.update.message!.from!.id, new Date());
+    await ctx.reply("OTP benar. Anda diizinkan menjadi admin selama 15 menit.");
+  } else {
+    await ctx.reply("OTP salah");
+  }
 });
 
 /* VCF Generator */
@@ -197,6 +247,20 @@ bot.command("convertnohp", async (ctx: MyContext) => {
   await ctx.reply("*⚠️ PENTING:* Pastikan Anda lakukan 2 hal berikut sebelum menyalin teks yang dibuat di atas:\n\n1\\. Mengubah format _cell_ dari *General/Number* menjadi *Text* sebelum menyalin teks\n\n2\\. Menempelkannya secara _plaintext_ melalui menu *Paste As* / *Paste Special* dengan menggunakan *Ctrl\\-Shift\\-V* \\(macOS: *^ ⌘ V*\\.\\)", { parse_mode: "MarkdownV2" });
 });
 
+bot.command("kirimmateri", async (ctx: MyContext) => {
+  let numbers = ctx.message!.text!.split(/\s/);
+  if (numbers.length < 2) {
+    ctx.reply("Gunakan perintah ini dengan input seperti berikut\\.\n\n`/convertnohp 080989999 \\+62809\\-899\\-99` \\(tanpa spasi antar nomor\\)\\.\n\n*⚠️ PENTING:* Jika teks yang disalin dari Excel muncul seperti *628098E\\+09*, pastikan Anda _paste_ dengan menggunakan tombol *Ctrl\\-Shift\\-V* \\(macOS: *^ ⌘ V*\\)\\.", { parse_mode: "MarkdownV2" });
+    return;
+  }
+});
+
+/* Kirim File MSJ 1 via WhatsApp */
+bot.use(createConversation(async function sendMaterialsConversationStub (a, b) {whatsAppMSJData = await sendMaterialsConversation(a, b, whatsAppMSJData)}));
+bot.command("kirimpdf", (ctx: MyContext) => {
+  ctx.conversation.enter("sendMaterialsConversationStub");
+});
+
 bot.start();
 console.log("Bot is now available");
 
@@ -210,21 +274,95 @@ process.once('SIGTERM', () => {
   bot.stop();
 });
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
-})
+});
+
+app.use('/static', express.static('materials'));
 
 app.get('/verify_integrity', (req, res) => {
   res.send({
     "status": "OK",
     "token": webhookVerificationToken,
   });
-})
+});
+
+app.use('/whatsapp_webhook', async (req: express.Request, res: express.Response) => {
+  console.log(JSON.stringify(req.body));
+  if (
+    req.query['hub.mode'] == 'subscribe' &&
+    req.query['hub.verify_token'] == 'asdasd'
+  ) {
+    return res.send(req.query['hub.challenge']);
+  }
+  try {
+    const data = req.body;
+    if (data.object != "whatsapp_business_account") throw new Error();
+    
+    await Promise.all(data.entry.map(async (element: {id: string, changes: any[]}) => {
+      await Promise.all(element.changes.map(async (change: {value: {messages: [{
+        "from": number|string,
+        "id": string,
+        "timestamp": number|string,
+        "text": {
+          "body": string
+        }|undefined,
+        "type": string
+      }]}}) => {
+        await Promise.all(change.value.messages.map(async (message) => {
+          if (message.type == "text") {
+            if (message.text!.body.toLowerCase() == "ya" || message.text!.body.toLowerCase() == "yes") {
+              const msjFiles = whatsAppMSJData.get(message.from.toString());
+
+              if (!msjFiles) return;
+              
+              await Promise.all(msjFiles.map(async (file) => {
+                console.log(`Sending WhatsApp file ${file} to ${message.from}`);
+                const res = await fetch(`https://graph.facebook.com/v18.0/${process.env.WA_PHONE_NUMBER_ID}/messages`, {
+                  method: "post",
+                  headers: {
+                    "Authorization": `Bearer ${process.env.WA_TOKEN}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    "messaging_product": "whatsapp",
+                    "recipient_type": "individual",
+                    "to": message.from,
+                    "type": "document",
+                    "document": {
+                      "link": `https://${process.env.WEBHOOK_REMOTE_HOST}:${process.env.WEBHOOK_REMOTE_PORT}/static/${file}`,
+                      "filename": `MSJ ${file}`
+                    },
+                  }),
+                });
+                if (res.status != 200) {
+                  console.error(await res.text());
+                }
+              }));
+              whatsAppMSJData.delete(message.from.toString());
+            }
+          }
+         }));
+      }));
+    }));
+
+    res.status(200).json({
+      "status": "OK"
+    });
+  } catch (e) {
+    res.status(200).json({
+      "status": "KO",
+      "error": "BAD_REQUEST"
+    });
+  }
+});
 
 /* Start Telegram and Express */
-
 updateStatus();
 const statusUpdater = setInterval(updateStatus, 1000 * 60 * 5);
+const adminUpdater = setInterval(updateAdminExpiry, 1000 * 60);
 
 app.listen(port, () => {
   refreshWebhookVerificationToken()
